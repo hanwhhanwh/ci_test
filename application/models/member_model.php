@@ -50,7 +50,7 @@ class Member_model extends CI_Model {
 		$sql = "INSERT INTO `MEMBER` 
 	(user_name, user_id, passwd, tel, rank)
 VALUES
-	('{$member->user_name}', '{$member->user_name}', password('{$member->passwd}'), '{$member->tel}', {$member->rank});";
+	('{$member["user_name"]}', '{$member["user_id"]}', password('{$member["passwd"]}'), '{$member["tel"]}', {$member["rank"]});";
 
 		$this->db->query($sql);
     }

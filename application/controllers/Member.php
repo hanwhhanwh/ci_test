@@ -51,18 +51,23 @@ class Member extends CI_Controller
 
 	function insert()
 	{
-		$tel = sprint("%-3s%-4s%-4s"
+		$tel = sprintf("%-3s%-4s%-4s"
 			, $this->input->post("tel1", true)
 			, $this->input->post("tel2", true)
 			, $this->input->post("tel3", true) );
+
 		$member = array(
 			'user_name' => $this->input->post("user_name", true)
 			, 'user_id' => $this->input->post("user_id", true)
 			, 'passwd' => $this->input->post("user_id", true)
 			, 'tel' => $tel
 			, 'rank' => $this->input->post("rank", true)
+		);
 
 		$this->member_model->insertMember($member);
+
+		// 사용자 추가 후, 목록 페이지로 이동
+		redirect("/member");
 	}
 
 
@@ -107,6 +112,7 @@ class Member extends CI_Controller
 			, 'passwd' => $this->input->post("user_id", true)
 			, 'tel' => $tel
 			, 'rank' => $this->input->post("rank", true)
+		);
 
 		$this->member_model->updateMember($member);
 	}
