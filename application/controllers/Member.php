@@ -14,6 +14,7 @@ class Member extends CI_Controller
 
 	function add()
 	{
+		$this->load->library("form_validation");
 		$data['page_title'] = "사용자 추가";
 		$this->load->view('main_header', $data);
 		$this->load->view('member_add', $data);
@@ -33,6 +34,7 @@ class Member extends CI_Controller
 
 	function edit()
 	{
+		$this->load->library("form_validation");
 		$num = $this->uri->segment(4);
 		$data['page_title'] = "사용자 수정";
 		$data['member'] = $this->member_model->getMember($num);
@@ -51,23 +53,39 @@ class Member extends CI_Controller
 
 	function insert()
 	{
-		$tel = sprintf("%-3s%-4s%-4s"
+		$this->load->library("form_validation");
+
+		$this->form_validation->set_rules("user_name", "이름", "required|max_length[20]");
+		$this->form_validation->set_rules("user_id", "아이디", "required|max_length[20]");
+		$this->form_validation->set_rules("passwd", "암호", "required|max_length[20]");
+
+		if ($this->form_validation->run() == FALSE)
+		{
+			$data['page_title'] = "사용자 추가";
+			$this->load->view('main_header', $data);
+			$this->load->view('member_add', $data);
+			$this->load->view('main_footer', $data);
+		}
+		else
+		{
+			$tel = sprintf("%-3s%-4s%-4s"
 			, $this->input->post("tel1", true)
 			, $this->input->post("tel2", true)
 			, $this->input->post("tel3", true) );
 
-		$member = array(
-			'user_name' => $this->input->post("user_name", true)
-			, 'user_id' => $this->input->post("user_id", true)
-			, 'passwd' => $this->input->post("user_id", true)
-			, 'tel' => $tel
-			, 'rank' => $this->input->post("rank", true)
-		);
+			$member = array(
+				'user_name' => $this->input->post("user_name", true)
+				, 'user_id' => $this->input->post("user_id", true)
+				, 'passwd' => $this->input->post("user_id", true)
+				, 'tel' => $tel
+				, 'rank' => $this->input->post("rank", true)
+			);
 
-		$this->member_model->insertMember($member);
+			$this->member_model->insertMember($member);
 
-		// 사용자 추가 후, 목록 페이지로 이동
-		redirect("/member");
+			// 사용자 추가 후, 목록 페이지로 이동
+			redirect("/member");
+		}
 	}
 
 
