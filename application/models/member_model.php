@@ -59,11 +59,11 @@ VALUES
 	function updateMember($num, $member)
     {
 		$sql = "UPDATE `MEMBER` SET 
-	user_name = '{$member->user_name}'
-	, user_id = '{$member->user_id}'
-	, passwd = password('{$member->passwd}')
-	, tel = '{$member->tel}'
-	, rank = {$member->rank}
+	user_name = '{$member["user_name"]}'
+	, user_id = '{$member["user_id"]}'
+	, passwd = password('{$member["passwd"]}')
+	, tel = '{$member["tel"]}'
+	, rank = {$member["rank"]}
 WHERE num = {$num};";
 
 		$this->db->query($sql);

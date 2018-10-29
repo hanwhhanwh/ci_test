@@ -37,6 +37,7 @@ class Member extends CI_Controller
 		$this->load->library("form_validation");
 		$num = $this->uri->segment(4);
 		$data['page_title'] = "사용자 수정";
+		$data['num'] = $num;
 		$data['member'] = $this->member_model->getMember($num);
 
 		$this->load->view('main_header', $data);
@@ -76,7 +77,7 @@ class Member extends CI_Controller
 			$member = array(
 				'user_name' => $this->input->post("user_name", true)
 				, 'user_id' => $this->input->post("user_id", true)
-				, 'passwd' => $this->input->post("user_id", true)
+				, 'passwd' => $this->input->post("passwd", true)
 				, 'tel' => $tel
 				, 'rank' => $this->input->post("rank", true)
 			);
@@ -120,19 +121,46 @@ class Member extends CI_Controller
 
 	function update()
 	{
-		$tel = sprint("%-3s%-4s%-4s"
-			, $this->input->post("tel1", true)
-			, $this->input->post("tel2", true)
-			, $this->input->post("tel3", true) );
-		$member = array(
-			'user_name' => $this->input->post("user_name", true)
-			, 'user_id' => $this->input->post("user_id", true)
-			, 'passwd' => $this->input->post("user_id", true)
-			, 'tel' => $tel
-			, 'rank' => $this->input->post("rank", true)
-		);
+		$this->load->library("form_validation");
 
-		$this->member_model->updateMember($member);
+		$this->form_validation->set_rules("user_name", "이름", "required|max_length[20]");
+		$this->form_validation->set_rules("user_id", "아이디", "required|max_length[20]");
+		$this->form_validation->set_rules("passwd", "암호", "required|max_length[20]");
+
+		$num = $this->uri->segment(4);
+		$data['page_title'] = "사용자 수정";
+		$data['num'] = $num;
+		if ($this->form_validation->run() == FALSE)
+		{
+			$data['member'] = $this->member_model->getMember($num);
+
+			echo "user_name=" . $this->input->post_get("user_name", true);
+			//print_r($_SERVER);
+			echo "method=" . $_SERVER["REQUEST_METHOD"];
+	
+			$this->load->view('main_header', $data);
+			$this->load->view('member_edit', $data);
+			$this->load->view('main_footer', $data);
+		}
+		else
+		{
+			$tel = sprintf("%-3s%-4s%-4s"
+				, $this->input->post_get("tel1", true)
+				, $this->input->post_get("tel2", true)
+				, $this->input->post_get("tel3", true) );
+			$member = array(
+				'user_name' => $this->input->post_get("user_name", true)
+				, 'user_id' => $this->input->post_get("user_id", true)
+				, 'passwd' => $this->input->post_get("passwd", true)
+				, 'tel' => $tel
+				, 'rank' => $this->input->post_get("rank", true)
+			);
+
+			$this->member_model->updateMember($num, $member);
+
+			// 사용자 추가 후, 목록 페이지로 이동
+			redirect("/member");
+		}
 	}
 }
 ?>

@@ -12,7 +12,7 @@
     </tr>
     <tr>
       <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 암호</th>
-		  <td align="left"><div class="form-inline"><input type="password" class="form-control form-control-sm" name="password" size="20" maxlength="30" value="<?=set_value("passwd"); ?>"></div><?php if (form_error("passwd") == true) echo form_error("passwd"); ?></td>
+		  <td align="left"><div class="form-inline"><input type="password" class="form-control form-control-sm" name="passwd" size="20" maxlength="30" value="<?=set_value("passwd"); ?>"></div><?php if (form_error("passwd") == true) echo form_error("passwd"); ?></td>
     </tr>
     <tr>
       <th scope="row" style="vertical-align:middle" class="mycolor2">전화</th>
