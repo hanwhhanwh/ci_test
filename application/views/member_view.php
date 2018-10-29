@@ -30,8 +30,8 @@
   </tbody>
 </table>
 <div align="center">
-<a class="btn btn-sm btn-outline-secondary" href="/member/edit/no/<?=$member->num?>">수정</a>
-<a class="btn btn-sm btn-outline-secondary" href="/member/delete/no/<?=$member->num?>"
+<a class="btn btn-sm btn-outline-secondary" href="/member/edit/no/<?=$member->num?><?php if (isset($name)) echo "/name/{$name}"; ?>">수정</a>
+<a class="btn btn-sm btn-outline-secondary" href="/member/delete/no/<?=$member->num?><?php if (isset($name)) echo "/name/{$name}"; ?>"
 		onClick="return confirm('삭제할까요?');">삭제</a>&nbsp;&nbsp;&nbsp;
 <button class="btn btn-sm btn-outline-secondary" type="button" id="button-back"
 		onClick="history.back();">이전화면으로</button>

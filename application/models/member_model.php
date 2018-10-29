@@ -26,10 +26,10 @@ class Member_model extends CI_Model {
     }
 
 
-    function getMembers($user_name)
+    function getMembers($name)
     {
-        if (isset($user_name))
-            $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member WHERE user_name LIKE '%{$user_name}%' ORDER BY num;";
+        if (isset($name) && (trim($name) != ""))
+            $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member WHERE user_name LIKE '%{$name}%' ORDER BY num;";
         else
 		    $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member ORDER BY num;";
 		$result = $this->db->query($sql);

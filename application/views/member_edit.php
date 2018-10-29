@@ -1,4 +1,4 @@
-<form id="form_add_member" method="POST" action="/member/update/num/<?=$num?>">
+<form id="form_add_member" method="POST" action="/member/update/num/<?=$num?><?php if (isset($name)) echo "/name/{$name}"; ?>">
 <div class="alert mycolor1 form-inline" role="alert">사용자 수정</div>
 <table class="table table-sm table-bordered mymargin5">
   <tbody>

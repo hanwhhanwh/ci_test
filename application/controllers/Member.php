@@ -16,6 +16,14 @@ class Member extends CI_Controller
 	{
 		$this->load->library("form_validation");
 		$data['page_title'] = "사용자 추가";
+
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("name", $arrUri))
+		{
+			$name = trim(urldecode($arrUri["name"]));
+			$data['name'] = $name;
+		}
+
 		$this->load->view('main_header', $data);
 		$this->load->view('member_add', $data);
 		$this->load->view('main_footer', $data);
@@ -27,8 +35,15 @@ class Member extends CI_Controller
 		$num = $this->uri->segment(4);
 		$this->member_model->deleteMember($num);
 
-		// 사용자 삭제 후, 목록 페이지로 이동
-		redirect("/member/");
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("name", $arrUri))
+		{
+			$name = trim(urldecode($arrUri["name"]));
+			redirect("/member/list/name/" . $name);
+		}
+		else
+			// 사용자 삭제 후, 목록 페이지로 이동
+			redirect("/member/");
 	}
 
 
@@ -40,19 +55,16 @@ class Member extends CI_Controller
 		$data['num'] = $num;
 		$data['member'] = $this->member_model->getMember($num);
 
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("name", $arrUri))
+		{
+			$name = trim(urldecode($arrUri["name"]));
+			$data['name'] = $name;
+		}
+
 		$this->load->view('main_header', $data);
 		$this->load->view('member_edit', $data);
 		$this->load->view('main_footer', $data);
-	}
-
-
-	function find()
-	{
-		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("user_name", $arrUri))
-			$user_name = trim(urldecode($arrUri["user_name"]));
-
-		$this->list($user_name);
 	}
 
 
@@ -70,6 +82,16 @@ class Member extends CI_Controller
 		$this->form_validation->set_rules("user_id", "아이디", "required|max_length[20]");
 		$this->form_validation->set_rules("passwd", "암호", "required|max_length[20]");
 
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("name", $arrUri))
+		{
+			$name = trim(urldecode($arrUri["name"]));
+			$data["name"] = $name;
+		}
+		else
+			$name = null;
+
+		echo "name = " . $name;
 		if ($this->form_validation->run() == FALSE)
 		{
 			$data['page_title'] = "사용자 추가";
@@ -95,17 +117,27 @@ class Member extends CI_Controller
 			$this->member_model->insertMember($member);
 
 			// 사용자 추가 후, 목록 페이지로 이동
-			redirect("/member");
+			if (isset($name))
+				redirect("/member/list/name/{$name}");
+			else
+				redirect("/member/");
 		}
 	}
 
 
-	function list($user_name = null)
+	function list()
 	{
 		$data['page_title'] = "사용자 목록";
-		if (isset($user_name))
-			$data['user_name'] = $user_name;
-		$data['members'] = $this->member_model->getMembers($user_name);
+
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("name", $arrUri))
+		{
+			$name = trim(urldecode($arrUri["name"]));
+			$data['name'] = $name;
+		}
+		else
+			$name = null;
+		$data['members'] = $this->member_model->getMembers($name);
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_list', $data);
@@ -118,6 +150,13 @@ class Member extends CI_Controller
 		$num = $this->uri->segment(4);
 		$data['page_title'] = "사용자 정보";
 		$data['member'] = $this->member_model->getMember($num);
+
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("name", $arrUri))
+		{
+			$name = trim(urldecode($arrUri["name"]));
+			$data['name'] = $name;
+		}
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_view', $data);
@@ -142,6 +181,15 @@ class Member extends CI_Controller
 		$num = $this->uri->segment(4);
 		$data['page_title'] = "사용자 수정";
 		$data['num'] = $num;
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("name", $arrUri))
+		{
+			$name = trim(urldecode($arrUri["name"]));
+			$data["name"] = $name;
+		}
+		else
+			$name = null;
+
 		if ($this->form_validation->run() == FALSE)
 		{
 			$data['member'] = $this->member_model->getMember($num);
@@ -167,7 +215,10 @@ class Member extends CI_Controller
 			$this->member_model->updateMember($num, $member);
 
 			// 사용자 추가 후, 목록 페이지로 이동
-			redirect("/member/");
+			if (isset($name))
+				redirect("/member/list/name/{$name}");
+			else
+				redirect("/member/");
 		}
 	}
 }
