@@ -5,19 +5,19 @@
 <script>
 <!--
 	function find_member() {
-    var elmUserName = document.getElementById("user_name");
+    var elmUserName = form_find_member.user_name;
     if (elmUserName.value.trim() == "")
     {
       alert("이름을 입력하여 주십시요.");
       elmUserName.focus();
       return;
     }
-		form_find_member.action="/member/find";
+		form_find_member.action="/member/find/user_name/" + elmUserName.value.trim();
 		form_find_member.submit();
 	}
 // -->
 </script>
-<form name="form_find_member" action="" method="GET">
+<form name="form_find_member" action="" method="GET"></form>
 <div class="row">
 	<div class="col-3" align="left">
 		<div class="input-group input-group-sm mb-3 w-150">
@@ -35,7 +35,6 @@
 		<a href="/member/add" class="btn btn-sm btn-outline-secondary">추가</a>
 	</div>
 </div>
-</form>
 <table class="table table-sm table-bordered mymargin5">
   <thead>
     <tr class="mycolor2">

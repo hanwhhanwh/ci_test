@@ -28,8 +28,6 @@ class Member_model extends CI_Model {
 
     function getMembers($user_name)
     {
-        // member 테이블의 모든 레코드를 불러 옴.
-        //$query = $this->db->get('member');
         if (isset($user_name))
             $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member WHERE user_name LIKE '%{$user_name}%' ORDER BY num;";
         else

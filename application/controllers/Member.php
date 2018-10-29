@@ -48,7 +48,9 @@ class Member extends CI_Controller
 
 	function find()
 	{
-		$user_name = trim($this->input->get_post("user_name", true));
+		$arrUri = $this->uri->uri_to_assoc();
+		if (array_key_exists("user_name", $arrUri))
+			$user_name = trim(urldecode($arrUri["user_name"]));
 
 		$this->list($user_name);
 	}
