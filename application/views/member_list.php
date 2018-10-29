@@ -2,17 +2,32 @@
   사용자
 </div>
 
-<form name="form_find_text" action="" method="GET">
+<script>
+<!--
+	function find_member() {
+    var elmUserName = document.getElementById("user_name");
+    if (elmUserName.value.trim() == "")
+    {
+      alert("이름을 입력하여 주십시요.");
+      elmUserName.focus();
+      return;
+    }
+		form_find_member.action="/member/find";
+		form_find_member.submit();
+	}
+// -->
+</script>
+<form name="form_find_member" action="" method="GET">
 <div class="row">
 	<div class="col-3" align="left">
 		<div class="input-group input-group-sm mb-3 w-150">
 		  <div class="input-group-prepend">
 			<span class="input-group-text" id="basic-addon1">이름: </span>
 		  </div>
-		  <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"
-			onKeydown="if (event.keyCode ===13) { find_text(); }" >
+		  <input type="text" class="form-control" id="user_name" name="user_name" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"
+			onKeydown="if (event.keyCode ===13) { find_member(); }" <?php if (isset($user_name)) echo "value=\"{$user_name}\""; ?>>
 		  <div class="input-group-append">
-			<button class="btn btn-sm btn-outline-secondary" type="button" id="button-addon2" onClick="find_text();" >검색</button>
+			<button class="btn btn-sm btn-outline-secondary" type="button" id="button-addon2" onClick="find_member();" >검색</button>
 		  </div>
 		</div>
 	</div>

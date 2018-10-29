@@ -28,7 +28,7 @@ class Member extends CI_Controller
 		$this->member_model->deleteMember($num);
 
 		// 사용자 삭제 후, 목록 페이지로 이동
-		redirect("/member");
+		redirect("/member/");
 	}
 
 
@@ -43,6 +43,14 @@ class Member extends CI_Controller
 		$this->load->view('main_header', $data);
 		$this->load->view('member_edit', $data);
 		$this->load->view('main_footer', $data);
+	}
+
+
+	function find()
+	{
+		$user_name = trim($this->input->get_post("user_name", true));
+
+		$this->list($user_name);
 	}
 
 
@@ -90,10 +98,12 @@ class Member extends CI_Controller
 	}
 
 
-	function list()
+	function list($user_name = null)
 	{
 		$data['page_title'] = "사용자 목록";
-		$data['members'] = $this->member_model->getMembers();
+		if (isset($user_name))
+			$data['user_name'] = $user_name;
+		$data['members'] = $this->member_model->getMembers($user_name);
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_list', $data);
@@ -134,10 +144,6 @@ class Member extends CI_Controller
 		{
 			$data['member'] = $this->member_model->getMember($num);
 
-			echo "user_name=" . $this->input->post_get("user_name", true);
-			//print_r($_SERVER);
-			echo "method=" . $_SERVER["REQUEST_METHOD"];
-	
 			$this->load->view('main_header', $data);
 			$this->load->view('member_edit', $data);
 			$this->load->view('main_footer', $data);
@@ -159,7 +165,7 @@ class Member extends CI_Controller
 			$this->member_model->updateMember($num, $member);
 
 			// 사용자 추가 후, 목록 페이지로 이동
-			redirect("/member");
+			redirect("/member/");
 		}
 	}
 }

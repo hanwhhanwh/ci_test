@@ -16,14 +16,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 <title><?=$page_title?></title>
-<script>
-<!--
-	function find_text() {
-		form_find_text.action="#";
-		form_find_text.submit();
-	}
-// -->
-</script>
 </head>
 <body>
 
