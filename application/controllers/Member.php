@@ -9,6 +9,21 @@ class Member extends CI_Controller
 		$this->load->database();
 		$this->load->model('member_model');
 		$this->load->helper(array("date", "url"));
+		$this->load->library("pagination");
+
+		$config['per_page'] = 5;
+	}
+
+
+	function _setParamFromUri(&$arrUri, &$arrData, $strParamName)
+	{
+		if (array_key_exists($strParamName, $arrUri))
+		{
+			$value = trim(urldecode($arrUri[$strParamName]));
+			$arrData[$strParamName] = $value;
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 
@@ -130,14 +145,25 @@ class Member extends CI_Controller
 		$data['page_title'] = "사용자 목록";
 
 		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("name", $arrUri))
+		if ($this->_setParamFromUri($arrUri, $data, "name"))
+		// if (array_key_exists("name", $arrUri))
 		{
 			$name = trim(urldecode($arrUri["name"]));
-			$data['name'] = $name;
+			$config['base_url'] = "/member/list/name/{$name}/page/";
+			$config['uri_segment'] = 6;
 		}
 		else
+		{
 			$name = null;
+			$config['base_url'] = '/member/list/page/';
+			$config['uri_segment'] = 4;
+		}
+		$this->_setParamFromUri($arrUri, $data, "page");
+
 		$data['members'] = $this->member_model->getMembers($name);
+		$config['total_rows'] = 121;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_list', $data);
@@ -152,22 +178,23 @@ class Member extends CI_Controller
 		$data['member'] = $this->member_model->getMember($num);
 
 		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("name", $arrUri))
-		{
-			$name = trim(urldecode($arrUri["name"]));
-			$data['name'] = $name;
-		}
+		$this->_setParamFromUri($arrUri, $data, "name");
+		$this->_setParamFromUri($arrUri, $data, "page");
+		// if (array_key_exists("name", $arrUri))
+		// {
+		// 	$name = trim(urldecode($arrUri["name"]));
+		// 	$data['name'] = $name;
+		// }
+		// if (array_key_exists("page", $arrUri))
+		// {
+		// 	$page = trim(urldecode($arrUri["page"]));
+		// 	$data['page'] = $page;
+		// }
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_view', $data);
 		$this->load->view('main_footer', $data);
 	}
-
-
-	function test()
-	{
-		echo "Test function called.";
-	}	
 
 
 	function update()
