@@ -1,4 +1,13 @@
-<form id="form_add_member" method="POST" action="/member/insert<?php if (isset($name)) echo "/name/{$name}"; ?>">
+<?php
+  $strAction = "/member/insert";
+  if (isset($num))
+    $strAction .= "/num/{$num}";
+  if (isset($name))
+    $strAction .= "/name/{$name}";
+  if (isset($page))
+    $strAction .= "/page/{$page}";
+?>
+<form id="form_add_member" method="POST" action="<?=$strAction?>">
 <div class="alert mycolor1 form-inline" role="alert">사용자 추가</div>
 <table class="table table-sm table-bordered mymargin5">
   <tbody>

@@ -16,6 +16,13 @@
 	}
 // -->
 </script>
+<?php
+    $strUri2 = "";
+    if (isset($name))
+      $strUri2 .= "/name/{$name}";
+    if (isset($page))
+      $strUri2 .= "/page/{$page}";
+?>
 <form name="form_find_member" action="" method="GET"></form>
 <div class="row">
 	<div class="col-3" align="left">
@@ -31,7 +38,7 @@
 		</div>
 	</div>
 	<div class="col-9" align="right">
-		<a href="/member/add<?php if (isset($name)) echo "/name/{$name}"; ?>" class="btn btn-sm btn-outline-secondary">추가</a>
+		<a href="/member/add<?=$strUri2?>" class="btn btn-sm btn-outline-secondary">추가</a>
 	</div>
 </div>
 <table class="table table-sm table-bordered mymargin5">
@@ -52,10 +59,12 @@
 		$num = $member->num;
 		$tel = $member->tel;
 		$rank = ($member->rank == 0) ? "관리자" : "직원";
-?>
+  
+    $strUri = "/num/{$num}" . $strUri2;
+  ?>
     <tr>
       <th scope="row"><?php echo $num; ?></th>
-      <td><a href="/member/view/no/<?=$num?><?php if (isset($name)) echo "/name/{$name}"; ?>"><?= $member->user_name ?></a></td>
+      <td><a href="/member/view<?=$strUri?>"><?= $member->user_name ?></a></td>
       <td><?= $member->user_id ?></td>
       <td><?= $member->passwd ?></td>
       <td><?= $member->tel ?></td>

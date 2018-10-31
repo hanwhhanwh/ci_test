@@ -26,12 +26,17 @@ class Member_model extends CI_Model {
     }
 
 
-    function getMembers($name)
+    function getMembers($name, $page = 1)
     {
-        if (isset($name) && (trim($name) != ""))
-            $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member WHERE user_name LIKE '%{$name}%' ORDER BY num;";
+        if (isset($page) && ($page > 0))
+            $start = ($page - 1) * PG_PER_PAGE;
         else
-		    $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member ORDER BY num;";
+            $start = 0;
+        $per_page = PG_PER_PAGE;
+        if (isset($name) && (trim($name) != ""))
+            $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member WHERE user_name LIKE '%{$name}%' ORDER BY num LIMIT {$start}, {$per_page};";
+        else
+		    $sql = "SELECT num, user_name, user_id, passwd, tel, rank FROM member ORDER BY num LIMIT {$start}, {$per_page};";
 		$result = $this->db->query($sql);
         
         if ($result->num_rows() > 0)
@@ -42,6 +47,26 @@ class Member_model extends CI_Model {
 		{
             show_error('Member is empty!');
         }
+    }
+
+
+    function getMembersCount($name)
+    {
+        if (isset($name) && (trim($name) != ""))
+            $sql = "SELECT COUNT(1) AS member_count FROM member WHERE user_name LIKE '%{$name}%';";
+        else
+		    $sql = "SELECT COUNT(1) FROM member;";
+		$result = $this->db->query($sql);
+        $row = $result->unbuffered_row();
+        if (isset($row))
+        {
+            foreach($row as $key => $value)
+            {
+                return $value;
+            }
+        }
+		else
+            return 0;
     }
 
 

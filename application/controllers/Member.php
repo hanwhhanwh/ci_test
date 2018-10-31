@@ -10,34 +10,30 @@ class Member extends CI_Controller
 		$this->load->model('member_model');
 		$this->load->helper(array("date", "url"));
 		$this->load->library("pagination");
-
-		$config['per_page'] = 5;
 	}
 
 
-	function _setParamFromUri(&$arrUri, &$arrData, $strParamName)
+	function _setParamFromUri(&$arrData, &$arrUri, $strParamName)
 	{
 		if (array_key_exists($strParamName, $arrUri))
 		{
 			$value = trim(urldecode($arrUri[$strParamName]));
 			$arrData[$strParamName] = $value;
-			return TRUE;
+			return $value;
 		}
-		return FALSE;
+		return null;
 	}
 
 
 	function add()
 	{
 		$this->load->library("form_validation");
+
 		$data['page_title'] = "사용자 추가";
 
 		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("name", $arrUri))
-		{
-			$name = trim(urldecode($arrUri["name"]));
-			$data['name'] = $name;
-		}
+		$this->_setParamFromUri($data, $arrUri, "name");
+		$this->_setParamFromUri($data, $arrUri, "page");
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_add', $data);
@@ -47,35 +43,34 @@ class Member extends CI_Controller
 
 	function delete()
 	{
-		$num = $this->uri->segment(4);
+		$arrUri = $this->uri->uri_to_assoc();
+		$this->_setParamFromUri($data, $arrUri, "name");
+		$this->_setParamFromUri($data, $arrUri, "page");
+		$num = $this->_setParamFromUri($data, $arrUri, "num");
 		$this->member_model->deleteMember($num);
 
-		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("name", $arrUri))
-		{
-			$name = trim(urldecode($arrUri["name"]));
-			redirect("/member/list/name/" . $name);
-		}
-		else
-			// 사용자 삭제 후, 목록 페이지로 이동
-			redirect("/member/");
+		$strRedirect = "/member/list";
+		if (isset($name))
+			$strRedirect .= "/name/{$name}";
+		if (isset($page))
+			$strRedirect .= "/page/{$page}";
+
+		// 사용자 삭제 후, 목록 페이지로 이동
+		redirect( $strRedirect );
 	}
 
 
 	function edit()
 	{
 		$this->load->library("form_validation");
-		$num = $this->uri->segment(4);
+
 		$data['page_title'] = "사용자 수정";
-		$data['num'] = $num;
-		$data['member'] = $this->member_model->getMember($num);
 
 		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("name", $arrUri))
-		{
-			$name = trim(urldecode($arrUri["name"]));
-			$data['name'] = $name;
-		}
+		$this->_setParamFromUri($data, $arrUri, "name");
+		$this->_setParamFromUri($data, $arrUri, "page");
+		$num = $this->_setParamFromUri($data, $arrUri, "num");
+		$data['member'] = $this->member_model->getMember($num);
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_edit', $data);
@@ -98,15 +93,9 @@ class Member extends CI_Controller
 		$this->form_validation->set_rules("passwd", "암호", "required|max_length[20]");
 
 		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("name", $arrUri))
-		{
-			$name = trim(urldecode($arrUri["name"]));
-			$data["name"] = $name;
-		}
-		else
-			$name = null;
-
-		echo "name = " . $name;
+		$name = $this->_setParamFromUri($data, $arrUri, "name");
+		$page = $this->_setParamFromUri($data, $arrUri, "page");
+	
 		if ($this->form_validation->run() == FALSE)
 		{
 			$data['page_title'] = "사용자 추가";
@@ -131,11 +120,14 @@ class Member extends CI_Controller
 
 			$this->member_model->insertMember($member);
 
-			// 사용자 추가 후, 목록 페이지로 이동
+			$strRedirect = "/member/list";
 			if (isset($name))
-				redirect("/member/list/name/{$name}");
-			else
-				redirect("/member/");
+				$strRedirect .= "/name/{$name}";
+			if (isset($page))
+				$strRedirect .= "/page/{$page}";
+	
+			// 사용자 추가 후, 목록 페이지로 이동
+			redirect( $strRedirect );
 		}
 	}
 
@@ -145,23 +137,21 @@ class Member extends CI_Controller
 		$data['page_title'] = "사용자 목록";
 
 		$arrUri = $this->uri->uri_to_assoc();
-		if ($this->_setParamFromUri($arrUri, $data, "name"))
+		if ($name = $this->_setParamFromUri($data, $arrUri, "name"))
 		// if (array_key_exists("name", $arrUri))
 		{
-			$name = trim(urldecode($arrUri["name"]));
 			$config['base_url'] = "/member/list/name/{$name}/page/";
 			$config['uri_segment'] = 6;
 		}
 		else
 		{
-			$name = null;
 			$config['base_url'] = '/member/list/page/';
 			$config['uri_segment'] = 4;
 		}
-		$this->_setParamFromUri($arrUri, $data, "page");
+		$page = $this->_setParamFromUri($data, $arrUri, "page");
 
-		$data['members'] = $this->member_model->getMembers($name);
-		$config['total_rows'] = 121;
+		$data['members'] = $this->member_model->getMembers($name, $page);
+		$config['total_rows'] = $this->member_model->getMembersCount($name);
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 
@@ -173,23 +163,13 @@ class Member extends CI_Controller
 
 	function view()
 	{
-		$num = $this->uri->segment(4);
 		$data['page_title'] = "사용자 정보";
-		$data['member'] = $this->member_model->getMember($num);
 
 		$arrUri = $this->uri->uri_to_assoc();
-		$this->_setParamFromUri($arrUri, $data, "name");
-		$this->_setParamFromUri($arrUri, $data, "page");
-		// if (array_key_exists("name", $arrUri))
-		// {
-		// 	$name = trim(urldecode($arrUri["name"]));
-		// 	$data['name'] = $name;
-		// }
-		// if (array_key_exists("page", $arrUri))
-		// {
-		// 	$page = trim(urldecode($arrUri["page"]));
-		// 	$data['page'] = $page;
-		// }
+		$this->_setParamFromUri($data, $arrUri, "name");
+		$this->_setParamFromUri($data, $arrUri, "page");
+		$num = $this->_setParamFromUri($data, $arrUri, "num");
+		$data['member'] = $this->member_model->getMember($num);
 
 		$this->load->view('main_header', $data);
 		$this->load->view('member_view', $data);
@@ -205,18 +185,12 @@ class Member extends CI_Controller
 		$this->form_validation->set_rules("user_id", "아이디", "required|max_length[20]");
 		$this->form_validation->set_rules("passwd", "암호", "required|max_length[20]");
 
-		$num = $this->uri->segment(4);
 		$data['page_title'] = "사용자 수정";
-		$data['num'] = $num;
 		$arrUri = $this->uri->uri_to_assoc();
-		if (array_key_exists("name", $arrUri))
-		{
-			$name = trim(urldecode($arrUri["name"]));
-			$data["name"] = $name;
-		}
-		else
-			$name = null;
-
+		$num = $this->_setParamFromUri($data, $arrUri, "num");
+		$name = $this->_setParamFromUri($data, $arrUri, "name");
+		$page = $this->_setParamFromUri($data, $arrUri, "page");
+	
 		if ($this->form_validation->run() == FALSE)
 		{
 			$data['member'] = $this->member_model->getMember($num);
@@ -241,11 +215,14 @@ class Member extends CI_Controller
 
 			$this->member_model->updateMember($num, $member);
 
-			// 사용자 추가 후, 목록 페이지로 이동
+			$strUri = "/member/list";
 			if (isset($name))
-				redirect("/member/list/name/{$name}");
-			else
-				redirect("/member/");
+			  $strUri .= "/name/{$name}";
+			if (isset($page))
+			  $strUri .= "/page/{$page}";
+
+			  // 사용자 추가 후, 목록 페이지로 이동
+			redirect( $strUri );
 		}
 	}
 }
