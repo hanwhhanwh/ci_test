@@ -38,7 +38,7 @@
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">통계</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="#">Best제품</a>
+          <a class="dropdown-item" href="/best_product">Best제품</a>
           <a class="dropdown-item" href="#">월별제품별현황</a>
           <a class="dropdown-item" href="#">종류별분포도</a>
         </div>
@@ -46,7 +46,7 @@
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">기초정보</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="/gubun">구분</a>
+          <a class="dropdown-item" href="/group">구분</a>
           <a class="dropdown-item" href="/product">제품</a>
 		  <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/member">사용자</a>
