@@ -24,7 +24,7 @@ class Product extends CI_Controller
 		$this->load->model('product_model');
 		$this->load->helper(array("date", "url"));
 		$this->load->library("pagination");
-	}
+    }
 
 
 	function _setParamFromUri(&$arrData, &$arrUri, $strParamName)
@@ -48,6 +48,7 @@ class Product extends CI_Controller
 		$arrUri = $this->uri->uri_to_assoc();
 		$this->_setParamFromUri($data, $arrUri, "name");
 		$this->_setParamFromUri($data, $arrUri, "page");
+		$data['all_groups'] = $this->product_model->getAllGroups();
 
 		$this->load->view('main_header', $data);
 		$this->load->view('product_add', $data);
@@ -74,7 +75,31 @@ class Product extends CI_Controller
 	}
 
 
-	function edit()
+    function do_upload(&$arrData)
+    {
+        $config['upload_path']          = './images/products/'; // "./"로 시작하는 경로 지정. DOCUMENT_ROOT 부터 상대 경로임
+        $config['allowed_types']        = 'gif|jpg|png';
+        $config['max_size']             = 100; // 업로드 파일의 최대 크기 (KB)
+        $config['max_width']            = 1024;
+        $config['max_height']           = 768;
+        $config['overwirte']            = TRUE;
+
+        $this->load->library("upload");
+        // Alternately you can set preferences by calling the ``initialize()`` method. Useful if you auto-load the class:
+        $this->upload->initialize($config);
+
+        if ( $this->upload->do_upload('product_image') )
+        {
+            $arrData['product_image'] = $this->upload->data();
+            print_r($arrData);
+            return TRUE;
+        }
+        print_r( $this->upload->data() );
+        return FALSE;
+    }
+
+
+    function edit()
 	{
 		$this->load->library("form_validation");
 
@@ -85,6 +110,7 @@ class Product extends CI_Controller
 		$this->_setParamFromUri($data, $arrUri, "page");
 		$product_no = $this->_setParamFromUri($data, $arrUri, "product_no");
 		$data['product'] = $this->product_model->getProduct($product_no);
+		$data['all_groups'] = $this->product_model->getAllGroups();
 
 		$this->load->view('main_header', $data);
 		$this->load->view('product_edit', $data);
@@ -100,7 +126,7 @@ class Product extends CI_Controller
 
 	function insert()
 	{
-		$this->load->library("form_validation");
+        $this->load->library("form_validation");
 
 		$this->form_validation->set_rules("product_name", "상품명", "required|max_length[20]");
 		$this->form_validation->set_rules("group_no", "상품종류", "required|max_length[20]");
@@ -112,6 +138,8 @@ class Product extends CI_Controller
 	
 		if ($this->form_validation->run() == FALSE)
 		{
+			$data['all_groups'] = $this->product_model->getAllGroups();
+
 			$data['page_title'] = "상품 추가";
 			$this->load->view('main_header', $data);
 			$this->load->view('product_add', $data);
@@ -124,8 +152,14 @@ class Product extends CI_Controller
 				, 'group_no' => $this->input->post_get("group_no", true)
 				, 'per_price' => $this->input->post_get("per_price", true)
 				, 'stock_count' => $this->input->post_get("stock_count", true)
-				, 'product_image_path' => $this->input->post_get("product_image_path", true)
-			);
+            );
+            
+            if ($this->do_upload($data))
+            {
+				$product['product_image_path'] = $data["upload_data"]["file_name"];
+            }
+            else
+                $product['product_image_path'] = null;
 
 			$this->product_model->insertProduct($product);
 
@@ -136,7 +170,7 @@ class Product extends CI_Controller
 				$strRedirect .= "/page/{$page}";
 	
 			// 상품 추가 후, 목록 페이지로 이동
-			redirect( $strRedirect );
+			//redirect( $strRedirect );
 		}
 	}
 
@@ -202,6 +236,7 @@ class Product extends CI_Controller
 		if ($this->form_validation->run() == FALSE)
 		{
 			$data['product'] = $this->product_model->getProduct($product_no);
+			$data['all_groups'] = $this->product_model->getAllGroups();
 
 			$this->load->view('main_header', $data);
 			$this->load->view('product_edit', $data);

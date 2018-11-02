@@ -66,3 +66,4 @@ application/config/autoload.php
 application/config/doctypes.php
 application/config/foreign_chars.php
 application/config/hooks.php
+images/products/*

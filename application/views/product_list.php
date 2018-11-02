@@ -49,7 +49,6 @@
       <th scope="col">상품명</th>
       <th scope="col">단가</th>
       <th scope="col">재고수량</th>
-      <th scope="col">이미지경로</th>
     </tr>
   </thead>
   <tbody>
@@ -61,11 +60,10 @@
   ?>
     <tr>
       <th scope="row"><?php echo $product_no; ?></th>
-      <td><?= $product->group_no ?></td>
-      <td><a href="/product/view<?=$strUri?>"><?= $product->product_name ?></a></td>
+      <td><?= $product->group_name ?></td>
+      <td><a href="/product/view<?=$strUri?>"><img width="100" src="/images/products/<?=$product->product_image_path?>" class="rounded" alt="<?= $product->product_name ?>"> <?= $product->product_name ?></a></td>
       <td><?= $product->per_price ?></td>
       <td><?= $product->stock_count ?></td>
-      <td><?= $product->product_image_path ?></td>
     </tr>
 <?php
 	}

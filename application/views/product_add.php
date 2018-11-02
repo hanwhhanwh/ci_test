@@ -7,29 +7,37 @@
   if (isset($page))
     $strAction .= "/page/{$page}";
 ?>
-<form id="form_add_group" method="POST" action="<?=$strAction?>">
+<form id="form_add_group" method="POST" enctype="multipart/form-data" action="<?=$strAction?>">
 <div class="alert mycolor1 form-inline" role="alert">상품 추가</div>
 <table class="table table-sm table-bordered mymargin5">
   <tbody>
-      <tr>
-        <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 상품종류</th>
-	    <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="group_no" size="20" maxlength="30" value="<?php echo set_value("group_no"); ?>" / ><?php if (form_error("group_no") == true) echo form_error("group_no"); ?></div></td>
+    <tr>
+      <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 상품종류</th>
+      <td align="left"><div class="form-inline"><select class="form-control form-control-sm" name="group_no"><option value="">&lt;&lt; 선택하세요. &gt;&gt;</option><?php
+        while ($group = $all_groups->unbuffered_row())
+        {
+          echo "<option value=\"{$group->group_no}\"";
+          //if ($product->group_no == $group->group_no)
+          //  echo " selected";
+          echo ">{$group->group_name}</option>";
+        } ?></select></div>
+      </td>
     </tr>
     <tr>
-        <th scope="row" width="20%" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 상품명</th>
-		<td align="left"><input type="text" class="form-control form-control-sm" name="product_name" size="20" maxlength="30" value="<?=set_value("product_name"); ?>"><?php if (form_error("product_name") == true) echo form_error("product_name"); ?></td>
+      <th scope="row" width="20%" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 상품명</th>
+		  <td align="left"><input type="text" class="form-control form-control-sm" name="product_name" size="20" maxlength="30" value="<?=set_value("product_name"); ?>"><?php if (form_error("product_name") == true) echo form_error("product_name"); ?></td>
     </tr>
     <tr>
-        <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 단가</th>
-        <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="per_price" size="20" maxlength="30" value="<?=set_value("per_price"); ?>"></div><?php if (form_error("per_price") == true) echo form_error("per_price"); ?></td>
+      <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 단가</th>
+      <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="per_price" size="20" maxlength="30" value="<?=set_value("per_price"); ?>"></div><?php if (form_error("per_price") == true) echo form_error("per_price"); ?></td>
     </tr>
     <tr>
-        <th scope="row" style="vertical-align:middle" class="mycolor2">재고수량</th>
+      <th scope="row" style="vertical-align:middle" class="mycolor2">재고수량</th>
 	    <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="stock_count" size="20" maxlength="30"></div></td>
     </tr>
     <tr>
-        <th scope="row" style="vertical-align:middle" class="mycolor2">제품이미지</th>
-	    <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="product_image_path" size="20" maxlength="30"></div></td>
+      <th scope="row" style="vertical-align:middle" class="mycolor2">제품이미지</th>
+	    <td align="left"><div class="form-inline"><input type="file" class="form-control form-control-sm" name="product_image" size="20" maxlength="30"></div></td>
     </tr>
   </tbody>
 </table>

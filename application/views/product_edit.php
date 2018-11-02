@@ -25,9 +25,14 @@
         <th scope="row" width="20%" style="vertical-align:middle" class="mycolor2">
 		    <font color="red">*</font> 상품종류
         </th>
-        <td align="left"><input type="text" class="form-control form-control-sm" name="group_no" size="20" maxlength="30" <?php 
-            if (isset($product)) echo "value=\"{$product->group_no}\""; ?>><?php 
-            if (form_error("parentgroup_no_no") == true) echo form_error("group_no"); ?>
+        <td align="left"><div class="form-inline"><select class="form-control form-control-sm" name="group_no"><option value="">&lt;&lt; 선택하세요. &gt;&gt;</option><?php
+            while ($group = $all_groups->unbuffered_row())
+            {
+            echo "<option value=\"{$group->group_no}\"";
+            if ($product->group_no == $group->group_no)
+              echo " selected";
+            echo ">{$group->group_name}</option>";
+            } ?></select></div>
         </td>
     </tr>
     <tr>
@@ -54,8 +59,14 @@
         </td>
     </tr>
     <tr>
-        <th scope="row" style="vertical-align:middle" class="mycolor2">상품이미지</th>
-        <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="product_image_path" size="20" maxlength="30" <?php 
+      <th colspan="2" scope="row" width="20%" style="vertical-align:middle" class="mycolor2">현재 상품이미지</th>
+    </tr>
+    <tr>
+	    <td colspan="2" align="left"><div align=center><img width="200" src="/images/products/<?=$product->product_image_path?>" class="img-fluid img-thumbnail rounded" alt="<?= $product->product_name ?>"></div></td>
+    </tr>
+    <tr>
+        <th scope="row" style="vertical-align:middle" class="mycolor2">변경 상품이미지</th>
+        <td align="left"><div class="form-inline"><input type="file" class="form-control form-control-sm" name="product_image" size="20" maxlength="30" <?php 
             if (isset($product)) echo "value=\"{$product->product_image_path}\""; ?></div>
         </td>
     </tr>

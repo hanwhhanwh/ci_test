@@ -33,12 +33,14 @@
 	  <td align="left"><?=$product->stock_count?></td>
     </tr>
     <tr>
-      <th scope="row" width="20%" style="vertical-align:middle" class="mycolor2">상품이미지</th>
-	  <td align="left"><?=$product->product_image_path?></td>
+      <th scope="row" style="vertical-align:middle" class="mycolor2">최종 수정시각</th>
+	    <td align="left"><?=$product->mod_date?></td>
     </tr>
     <tr>
-      <th scope="row" style="vertical-align:middle" class="mycolor2">최종 수정시각</th>
-	  <td align="left"><?=$product->mod_date?></td>
+      <th colspan="2" scope="row" width="20%" style="vertical-align:middle" class="mycolor2">상품이미지</th>
+    </tr>
+    <tr>
+	    <td colspan="2" align="left"><div align=center><img width="200" src="/images/products/<?=$product->product_image_path?>" class="img-fluid img-thumbnail rounded" alt="<?= $product->product_name ?>"></div></td>
     </tr>
   </tbody>
 </table>

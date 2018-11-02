@@ -31,7 +31,16 @@ class Product_model extends CI_Model {
     }
 
 
-	function getProduct($product_no)
+    function getAllGroups()
+    {
+        $sql = "SELECT group_no, group_name, parent_no, `level`, order_no, mod_date FROM `GROUP` ORDER BY group_no;";
+		$result = $this->db->query($sql);
+        
+        return $result;
+    }
+
+
+    function getProduct($product_no)
     {
 		$sql = "SELECT product_no, group_no, product_name, `per_price`, `stock_count`, `product_image_path`, mod_date FROM `PRODUCT` WHERE product_no = {$product_no};";
 		$result = $this->db->query($sql);
@@ -48,9 +57,25 @@ class Product_model extends CI_Model {
             $start = 0;
         $per_page = PG_PER_PAGE;
         if (isset($name) && (trim($name) != ""))
-            $sql = "SELECT product_no, group_no, product_name, `per_price`, `stock_count`, `product_image_path`, mod_date FROM `PRODUCT` WHERE product_name LIKE '%{$name}%' ORDER BY product_no LIMIT {$start}, {$per_page};";
+            $sql = "
+SELECT
+    product_no, G.group_name, product_name, `per_price`, `stock_count`
+    , `product_image_path`, P.mod_date, P.group_no
+FROM `PRODUCT` AS P
+    JOIN `GROUP` AS G
+        ON G.group_no = P.group_no
+WHERE 1 = 1
+    AND product_name LIKE '%{$name}%'
+ORDER BY product_no LIMIT {$start}, {$per_page};";
         else
-		    $sql = "SELECT product_no, group_no, product_name, `per_price`, `stock_count`, `product_image_path`, mod_date FROM `PRODUCT` ORDER BY product_no LIMIT {$start}, {$per_page};";
+		    $sql = "
+SELECT
+    product_no, group_name, product_name, `per_price`, `stock_count`
+    , `product_image_path`, P.mod_date, P.group_no
+FROM `PRODUCT` AS P
+    JOIN `GROUP` AS G
+        ON G.group_no = P.group_no
+ORDER BY product_no LIMIT {$start}, {$per_page};";
 		$result = $this->db->query($sql);
         
         if ($result->num_rows() > 0)
