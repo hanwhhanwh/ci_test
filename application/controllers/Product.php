@@ -118,6 +118,34 @@ class Product extends CI_Controller
 	}
 
 
+	function find()
+	{
+		$data['page_title'] = "상품 검색";
+
+		$arrUri = $this->uri->uri_to_assoc();
+		if ($name = $this->_setParamFromUri($data, $arrUri, "name"))
+		{
+			$config['base_url'] = "/product/find/name/{$name}/page/";
+			$config['uri_segment'] = 6;
+		}
+		else
+		{
+			$config['base_url'] = '/product/find/page/';
+			$config['uri_segment'] = 4;
+		}
+		$page = $this->_setParamFromUri($data, $arrUri, "page");
+
+		$data['products'] = $this->product_model->getProducts($name, $page);
+		$config['total_rows'] = $this->product_model->getProductsCount($name);
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+
+		$this->load->view('main_header_only', $data);
+		$this->load->view('find_product_list', $data);
+		$this->load->view('main_footer', $data);
+	}
+
+
 	function index()
 	{
 		$this->list();

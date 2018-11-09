@@ -15,22 +15,22 @@
 <!--
     function select_product() {
         var strSelectedProduct;
-        strSelectedProduct = form_add_group.select_product_no.value;
+        strSelectedProduct = form_ledger.select_product_no.value;
         if (strSelectedProduct == "") {
-            form_add_group.product_no.value = "";
-            form_add_group.per_price.value = "";
-            form_add_group.<?=$class_form_name?>_price.value = "";
+            form_ledger.product_no.value = "";
+            form_ledger.per_price.value = "";
+            form_ledger.<?=$class_form_name?>_price.value = "";
         }
         else {
             var arrProductInfo = strSelectedProduct.split("|");
-            form_add_group.product_no.value = arrProductInfo[0];
-            form_add_group.per_price.value = arrProductInfo[1];
-            form_add_group.<?=$class_form_name?>_price.value = Number(arrProductInfo[1]) * Number(form_add_group.<?=$class_form_name?>_count.value);
+            form_ledger.product_no.value = arrProductInfo[0];
+            form_ledger.per_price.value = arrProductInfo[1];
+            form_ledger.<?=$class_form_name?>_price.value = Number(arrProductInfo[1]) * Number(form_ledger.<?=$class_form_name?>_count.value);
         }
     }
 //-->
 </script>
-<form id="form_add_group" method="POST" action="<?=$strAction?>">
+<form id="form_ledger" method="POST" action="<?=$strAction?>">
 <div class="alert mycolor1 form-inline" role="alert">장부 수정</div>
 <table class="table table-sm table-bordered mymargin5">
   <tbody>
