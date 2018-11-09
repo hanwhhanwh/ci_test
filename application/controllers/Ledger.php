@@ -23,7 +23,9 @@ class Ledger extends CI_Controller
 		$this->load->database();
 		$this->load->model('ledger_model');
 		$this->load->helper(array("date", "url"));
-		$this->load->library("pagination");
+        $this->load->library("pagination");
+        date_default_timezone_set("Asia/Seoul");
+        $today = date("Y-m-d");
     }
 
 
