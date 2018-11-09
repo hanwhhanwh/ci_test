@@ -1,5 +1,5 @@
 <div class="alert mycolor1" role="alert">
-  상품
+  판매관리
 </div>
 
 <script>

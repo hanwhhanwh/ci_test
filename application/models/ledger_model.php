@@ -124,7 +124,25 @@ WHERE 1 = 1
     }
 
 
-	function insertInLedger($ledger)
+    function getProductName($product_no) 
+    {
+		$sql = "
+SELECT
+    P.product_name
+FROM `PRODUCT` AS P
+WHERE 1 = 1
+    AND product_no = {$product_no}
+;";
+		$result = $this->db->query($sql);
+
+        if ($result)
+            return $result->unbuffered_row()->product_name;
+        else
+            return "";
+    }
+
+
+    function insertInLedger($ledger)
     {
 		$sql = "
 INSERT INTO `LEDGER` 
@@ -147,6 +165,69 @@ VALUES
 ;";
 
 		$this->db->query($sql);
+    }
+
+
+    function searchLedgers($class, $start_date, $end_date, $product_no, $page = 1)
+    {
+        if (isset($page) && ($page > 0))
+            $start = ($page - 1) * PG_PER_PAGE;
+        else
+            $start = 0;
+        $per_page = PG_PER_PAGE;
+        $class_condition = ""; $date_condition = ""; $product_condition = "";
+        if (isset($class) && ( ($class > 0) && ($class <= 2) ) )
+            $class_condition = "AND `class` = {$class}";
+        if (isset($start_date) && (trim($start_date) != ""))
+            $date_condition = "AND ledger_date BETWEEN '{$start_date}' AND '{$end_date}'";
+        if (isset($product_no) && (trim($product_no) != ""))
+            $product_condition = "AND L.product_no  = {$product_no}";
+
+        $sql = "
+SELECT
+    ledger_no, L.ledger_date, `class`, L.product_no, product_name
+    , L.`per_price`, buy_count, `sale_count`, buy_price, sale_price
+    , note
+FROM `LEDGER` AS L
+    JOIN `PRODUCT` AS P ON P.product_no = L.product_no
+WHERE 1 = 1
+    {$class_condition}
+    {$date_condition}
+    {$product_condition}
+ORDER BY ledger_date, ledger_no LIMIT {$start}, {$per_page}
+;";
+
+        $result = $this->db->query($sql);
+        return $result;
+    }
+
+
+    function searchLedgersCount($class, $start_date, $end_date, $product_no)
+    {
+        $class_condition = ""; $date_condition = ""; $product_condition = "";
+        if (isset($class) && ( ($class > 0) && ($class <= 2) ) )
+            $class_condition = "AND `class` = {$class}";
+        if (isset($start_date) && (trim($start_date) != ""))
+            $date_condition = "AND ledger_date BETWEEN '{$start_date}' AND '{$end_date}'";
+        if (isset($product_no) && (trim($product_no) != ""))
+            $product_condition = "AND L.product_no  = {$product_no}";
+
+        $sql = "
+SELECT
+    COUNT(1) AS ledger_count
+FROM `LEDGER` AS L
+WHERE 1 = 1
+    {$class_condition}
+    {$date_condition}
+    {$product_condition}
+;";
+
+        $result = $this->db->query($sql);
+        $row = $result->unbuffered_row();
+        if (isset($row))
+            return $row->ledger_count;
+		else
+            return 0;
     }
 
 

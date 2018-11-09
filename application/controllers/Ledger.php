@@ -203,17 +203,19 @@ class Ledger extends CI_Controller
         if ( isset($class) )
 		{
             if ( (($class > 0) && ($class <= 2)) )
-			    $base_url .= "/class/{$class}";
+            {
+                $base_url .= "/class/{$class}";
+                if ($class == 1)
+                    $data['page_title'] = "장부 목록 - 매입";
+                else
+                    $data['page_title'] = "장부 목록 - 매출";
+            }
             $uri_segment += 2;
 		}
 		$page = $this->_setParamFromUri($data, $arrUri, "page");
     	$base_url .= "/page";
         $config['base_url'] = $base_url;
         $config['uri_segment'] = $uri_segment;
-
-        $data['class'] = $class;
-        $data['date'] = $date;
-        $data['page'] = $page;
 
 		$data['ledgers'] = $this->ledger_model->getLedgers($class, $date, $page);
 		$config['total_rows'] = $this->ledger_model->getLedgersCount($class, $date);
@@ -226,18 +228,55 @@ class Ledger extends CI_Controller
 	}
 
 
-	function view()
+	function search()
 	{
-		$data['page_title'] = "장부";
+		$data['page_title'] = "장부 기간조회 목록";
 
-		$arrUri = $this->uri->uri_to_assoc();
-		$this->_setParamFromUri($data, $arrUri, "name");
-		$this->_setParamFromUri($data, $arrUri, "page");
-		$ledger_no = $this->_setParamFromUri($data, $arrUri, "ledger_no");
-		$data['ledger'] = $this->ledger_model->getLedger($ledger_no);
+        $arrUri = $this->uri->uri_to_assoc();
+        $base_url = "/ledger/search";
+        $uri_segment = 4;
+        $start_date = $this->_setParamFromUri($data, $arrUri, "start_date");
+        $end_date = $this->_setParamFromUri($data, $arrUri, "end_date");
+        $product_no = $this->_setParamFromUri($data, $arrUri, "product_no");
+        $class = $this->_setParamFromUri($data, $arrUri, "class");
+        if ( isset($start_date) )
+        {
+			$base_url .= "/start_date/{$start_date}";
+            $uri_segment += 2;
+		}
+        if ( isset($end_date) )
+        {
+			$base_url .= "/end_date/{$end_date}";
+            $uri_segment += 2;
+		}
+        if ( isset($product_no) )
+        {
+            $data["product_name"] = $this->ledger_model->getProductName($product_no);
+		}
+        if ( isset($class) )
+		{
+            if ( (($class > 0) && ($class <= 2)) )
+            {
+                $base_url .= "/class/{$class}";
+                if ($class == 1)
+                    $data['page_title'] = "장부 기간조회 목록 - 매입";
+                else
+                    $data['page_title'] = "장부 기간조회 목록 - 매출";
+            }
+            $uri_segment += 2;
+		}
+		$page = $this->_setParamFromUri($data, $arrUri, "page");
+    	$base_url .= "/page";
+        $config['base_url'] = $base_url;
+        $config['uri_segment'] = $uri_segment;
+
+		$data['ledgers'] = $this->ledger_model->searchLedgers($class, $start_date, $end_date, $product_no, $page);
+		$config['total_rows'] = $this->ledger_model->searchLedgersCount($class, $start_date, $end_date, $product_no);
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('main_header', $data);
-		$this->load->view('ledger_view', $data);
+		$this->load->view('ledger_search', $data);
 		$this->load->view('main_footer', $data);
 	}
 
@@ -295,6 +334,22 @@ class Ledger extends CI_Controller
 			  // 장부 추가 후, 목록 페이지로 이동
 			redirect( $strUri );
 		}
+	}
+
+
+    function view()
+	{
+		$data['page_title'] = "장부";
+
+		$arrUri = $this->uri->uri_to_assoc();
+		$this->_setParamFromUri($data, $arrUri, "name");
+		$this->_setParamFromUri($data, $arrUri, "page");
+		$ledger_no = $this->_setParamFromUri($data, $arrUri, "ledger_no");
+		$data['ledger'] = $this->ledger_model->getLedger($ledger_no);
+
+		$this->load->view('main_header', $data);
+		$this->load->view('ledger_view', $data);
+		$this->load->view('main_footer', $data);
 	}
 }
 ?>

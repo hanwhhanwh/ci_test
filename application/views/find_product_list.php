@@ -13,15 +13,18 @@
         return;
         }
 		
-        window.location.href = "/product/list/name/" + elmUserName.value.trim();
+        window.location.href = "/product/find/name/" + elmUserName.value.trim();
 	}
 
     function select_product(nProductNo, strProductName, nPerPrice) {
         if ( (opener != null) && (opener.form_ledger != null) ) {
             opener.form_ledger.product_no.value = nProductNo;
             opener.form_ledger.product_name.value = strProductName;
-            opener.form_ledger.per_price.value = nPerPrice;
-            opener.compute_price();
+            if (opener.form_ledger.per_price != null)
+            {
+              opener.form_ledger.per_price.value = nPerPrice;
+              opener.compute_price();
+            }
             self.close();
         }
     }
