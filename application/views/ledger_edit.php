@@ -13,21 +13,13 @@
 ?>
 <script>
 <!--
-    function select_product() {
-        var strSelectedProduct;
-        strSelectedProduct = form_ledger.select_product_no.value;
-        if (strSelectedProduct == "") {
-            form_ledger.product_no.value = "";
-            form_ledger.per_price.value = "";
-            form_ledger.<?=$class_form_name?>_price.value = "";
-        }
-        else {
-            var arrProductInfo = strSelectedProduct.split("|");
-            form_ledger.product_no.value = arrProductInfo[0];
-            form_ledger.per_price.value = arrProductInfo[1];
-            form_ledger.<?=$class_form_name?>_price.value = Number(arrProductInfo[1]) * Number(form_ledger.<?=$class_form_name?>_count.value);
-        }
-    }
+    function compute_price() {
+        form_ledger.<?=$class_form_name?>_price.value = Number(form_ledger.per_price.value) * Number(form_ledger.<?=$class_form_name?>_count.value);
+    };
+
+    function find_product() {
+        window.open("/product/find/", "find_product", "resizable=yes,scrollbars=yes,width=500,height=600");
+    };
 //-->
 </script>
 <form id="form_ledger" method="POST" action="<?=$strAction?>">
@@ -55,15 +47,11 @@
     </tr>
     <tr>
         <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 제품명</th>
-        <td align="left"><input type="hidden" name="product_no" />
-            <div class="form-inline"><select class="form-control form-control-sm" name="select_product_no" onChange="select_product();"><option value="">&lt;&lt; 선택하세요. &gt;&gt;</option><?php
-            while ($product = $all_products->unbuffered_row())
-            {
-                echo "<option value=\"{$product->product_no}|{$product->per_price}\"";
-                if ($ledger->product_no == $product->product_no)
-                    echo " selected";
-                echo ">{$product->product_name} (" . number_format($product->per_price) . ")</option>";
-            } ?></select></div>
+        <td align="left"><input type="hidden" name="product_no" value="<?=$ledger->product_no?>" />
+            <div class="form-inline">
+                <input type="text" class="form-control form-control-sm" id="product_name" size="20" maxlength="30" value="<?=$ledger->product_name?>" readonly />
+                <button class="btn btn-sm btn-outline-secondary" type="button" id="button-addon2" onClick="find_product();" >상품 찾기</button>
+            </div>
         </td>
     </tr>
     <tr>

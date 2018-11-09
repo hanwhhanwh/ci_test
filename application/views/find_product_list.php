@@ -21,6 +21,7 @@
             opener.form_ledger.product_no.value = nProductNo;
             opener.form_ledger.product_name.value = strProductName;
             opener.form_ledger.per_price.value = nPerPrice;
+            opener.compute_price();
             self.close();
         }
     }
