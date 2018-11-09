@@ -31,6 +31,22 @@
     $(function() {
         $("#ledger_date").datepicker();
     });
+
+    function select_product() {
+        var strSelectedProduct;
+        strSelectedProduct = form_add_group.select_product_no.value;
+        if (strSelectedProduct == "") {
+            form_add_group.product_no.value = "";
+            form_add_group.per_price.value = "";
+            form_add_group.<?=$class_form_name?>_price.value = "";
+        }
+        else {
+            var arrProductInfo = strSelectedProduct.split("|");
+            form_add_group.product_no.value = arrProductInfo[0];
+            form_add_group.per_price.value = arrProductInfo[1];
+            form_add_group.<?=$class_form_name?>_price.value = Number(arrProductInfo[1]) * Number(form_add_group.<?=$class_form_name?>_count.value);
+        }
+    }
 </script>
 <form id="form_add_group" method="POST" enctype="multipart/form-data" action="<?=$strAction?>">
 <div class="alert mycolor1 form-inline" role="alert">장부 추가</div>
@@ -46,25 +62,26 @@
     </tr>
     <tr>
         <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 제품명</th>
-        <td align="left"><div class="form-inline"><select class="form-control form-control-sm" name="product_no"><option value="">&lt;&lt; 선택하세요. &gt;&gt;</option><?php
+        <td align="left"><input type="hidden" name="product_no" />
+            <div class="form-inline"><select class="form-control form-control-sm" name="select_product_no" onChange="select_product();" ><option value="">&lt;&lt; 선택하세요. &gt;&gt;</option><?php
             while ($product = $all_products->unbuffered_row())
             {
-              echo "<option value=\"{$product->product_no}\"";
-              echo ">{$product->product_name}</option>";
+              echo "<option value=\"{$product->product_no}|{$product->per_price}\"";
+              echo ">{$product->product_name} (" . number_format($product->per_price) . ")</option>";
             } ?></select></div>
       </td>
     </tr>
     <tr>
       <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 단가</th>
-      <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="per_price" size="20" maxlength="30" value="<?=set_value("per_price"); ?>"></div><?php if (form_error("per_price") == true) echo form_error("per_price"); ?></td>
+      <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="per_price" size="20" maxlength="30" value="<?=set_value("per_price"); ?>" /></div><?php if (form_error("per_price") == true) echo form_error("per_price"); ?></td>
     </tr>
     <tr>
       <th scope="row" style="vertical-align:middle" class="mycolor2"><?=$class_name?>수량</th>
-	    <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_count" size="20" maxlength="30"></div></td>
+	    <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_count" size="20" maxlength="30" onChange="select_product();" /></div></td>
     </tr>
     <tr>
       <th scope="row" style="vertical-align:middle" class="mycolor2"><?=$class_name?>금액</th>
-	    <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_price" size="20" maxlength="30"></div></td>
+	    <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_price" size="20" maxlength="30" readonly="readonly" /></div></td>
     </tr>
     <tr>
       <th scope="row" width="20%" style="vertical-align:middle" class="mycolor2">비 고</th>

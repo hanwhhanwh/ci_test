@@ -11,6 +11,25 @@
     $class_form_name =  ($ledger->class == 1) ? "buy" : "sale";
     $class_color = ($ledger->class != 1) ? "red"  : "blue";
 ?>
+<script>
+<!--
+    function select_product() {
+        var strSelectedProduct;
+        strSelectedProduct = form_add_group.select_product_no.value;
+        if (strSelectedProduct == "") {
+            form_add_group.product_no.value = "";
+            form_add_group.per_price.value = "";
+            form_add_group.<?=$class_form_name?>_price.value = "";
+        }
+        else {
+            var arrProductInfo = strSelectedProduct.split("|");
+            form_add_group.product_no.value = arrProductInfo[0];
+            form_add_group.per_price.value = arrProductInfo[1];
+            form_add_group.<?=$class_form_name?>_price.value = Number(arrProductInfo[1]) * Number(form_add_group.<?=$class_form_name?>_count.value);
+        }
+    }
+//-->
+</script>
 <form id="form_add_group" method="POST" action="<?=$strAction?>">
 <div class="alert mycolor1 form-inline" role="alert">장부 수정</div>
 <table class="table table-sm table-bordered mymargin5">
@@ -36,13 +55,14 @@
     </tr>
     <tr>
         <th scope="row" style="vertical-align:middle" class="mycolor2"><font color="red">*</font> 제품명</th>
-        <td align="left"><div class="form-inline"><select class="form-control form-control-sm" name="product_no"><option value="">&lt;&lt; 선택하세요. &gt;&gt;</option><?php
+        <td align="left"><input type="hidden" name="product_no" />
+            <div class="form-inline"><select class="form-control form-control-sm" name="select_product_no" onChange="select_product();"><option value="">&lt;&lt; 선택하세요. &gt;&gt;</option><?php
             while ($product = $all_products->unbuffered_row())
             {
-                echo "<option value=\"{$product->product_no}\"";
+                echo "<option value=\"{$product->product_no}|{$product->per_price}\"";
                 if ($ledger->product_no == $product->product_no)
                     echo " selected";
-                echo ">{$product->product_name}</option>";
+                echo ">{$product->product_name} (" . number_format($product->per_price) . ")</option>";
             } ?></select></div>
         </td>
     </tr>
@@ -55,14 +75,14 @@
     </tr>
     <tr>
         <th scope="row" style="vertical-align:middle" class="mycolor2"><?=$class_name?>수량</th>
-        <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_count" size="20" maxlength="30" <?php 
+        <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_count" size="20" maxlength="30" onChange="select_product();" <?php 
             if (isset($ledger)) echo ($ledger->class == 1) ? "value=\"{$ledger->buy_count}\"" : "value=\"{$ledger->sale_count}\""; ?></div><?php
             if (form_error("{$class_form_name}_count") == true) echo form_error("{$class_form_name}_count"); ?>
         </td>
     </tr>
     <tr>
         <th scope="row" style="vertical-align:middle" class="mycolor2"><?=$class_name?>금액</th>
-        <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_price" size="20" maxlength="30" <?php 
+        <td align="left"><div class="form-inline"><input type="text" class="form-control form-control-sm" name="<?=$class_form_name?>_price" size="20" maxlength="30" readonly <?php 
             if (isset($ledger)) echo ($ledger->class == 1) ? "value=\"{$ledger->buy_price}\"" : "value=\"{$ledger->sale_price}\""; ?></div><?php
             if (form_error("{$class_form_name}_price") == true) echo form_error("{$class_form_name}_price"); ?>
         </td>
