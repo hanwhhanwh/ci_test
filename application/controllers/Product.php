@@ -56,6 +56,42 @@ class Product extends CI_Controller
 	}
 
 
+	function best()
+	{
+		$data['page_title'] = "Best 상품 목록";
+
+        $base_url = "/product/best";
+        $uri_segment = 4;
+		$arrUri = $this->uri->uri_to_assoc();
+        $start_date = $this->_setParamFromUri($data, $arrUri, "start_date");
+        $end_date = $this->_setParamFromUri($data, $arrUri, "end_date");
+        if ( isset($start_date) )
+        {
+			$base_url .= "/start_date/{$start_date}";
+            $uri_segment += 2;
+		}
+        if ( isset($end_date) )
+        {
+			$base_url .= "/end_date/{$end_date}";
+            $uri_segment += 2;
+		}
+
+		$page = $this->_setParamFromUri($data, $arrUri, "page");
+    	$base_url .= "/page";
+        $config['base_url'] = $base_url;
+        $config['uri_segment'] = $uri_segment;
+
+		$data['products'] = $this->product_model->getBestProducts($start_date, $end_date, $page);
+		$config['total_rows'] = $this->product_model->getBestProductsCount($start_date, $end_date);
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+
+		$this->load->view('main_header', $data);
+		$this->load->view('product_best', $data);
+		$this->load->view('main_footer', $data);
+	}
+
+
 	function delete()
 	{
 		$arrUri = $this->uri->uri_to_assoc();

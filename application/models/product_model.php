@@ -40,6 +40,69 @@ class Product_model extends CI_Model {
     }
 
 
+    function getBestProducts($start_date, $end_date, $page = 1)
+    {
+        if (isset($page) && ($page > 0))
+            $start = ($page - 1) * PG_PER_PAGE;
+        else
+            $start = 0;
+        $per_page = PG_PER_PAGE;
+
+        $term_condition = "";
+        if ( isset($start_date) && ($start_date != "") && isset($end_date) && ($end_date != "") )
+            $term_condition = "AND L.ledger_date BETWEEN '{$start_date}' AND '{$end_date}'";
+        $sql = "
+SELECT
+    L.product_no, P.product_name, L.total_sale_count, L.total_sale_price, L.sales_count
+--    , G.group_name, P.`per_price`, P.`stock_count`, P.`product_image_path`, P.mod_date
+--    , P.group_no
+FROM (
+        SELECT
+            L.product_no, SUM(sale_count) AS total_sale_count, SUM(sale_price) AS total_sale_price, COUNT(sale_count) AS sales_count
+        FROM `LEDGER` AS L
+        WHERE 1 = 1
+            AND L.sale_count > 0
+            {$term_condition}
+        GROUP BY L.product_no
+    ) AS L
+    INNER JOIN `PRODUCT` AS P ON P.product_no = L.product_no
+    INNER JOIN `GROUP` AS G ON G.group_no = P.group_no
+ORDER BY 5 DESC, 4 DESC LIMIT {$start}, {$per_page};";
+		$result = $this->db->query($sql);
+        
+        return $result;
+    }
+
+
+    function getBestProductsCount($start_date, $end_date)
+    {
+        $term_condition = "";
+        if ( isset($start_date) && ($start_date != "") && isset($end_date) && ($end_date != "") )
+            $term_condition = "AND L.ledger_date BETWEEN '{$start_date}' AND '{$end_date}'";
+        $sql = "
+SELECT
+    COUNT(1) AS best_products_count
+FROM (
+        SELECT
+            L.product_no
+        FROM `LEDGER` AS L
+        WHERE 1 = 1
+            AND L.sale_count > 0
+            {$term_condition}
+        GROUP BY L.product_no
+    ) AS L;";
+		$result = $this->db->query($sql);
+        
+        if ( $result )
+        {
+            $row = $result->unbuffered_row();
+            return $row->best_products_count;
+        }
+        else
+            return 0;
+    }
+
+
     function getProduct($product_no)
     {
 		$sql = "SELECT product_no, group_no, product_name, `per_price`, `stock_count`, `product_image_path`, mod_date FROM `PRODUCT` WHERE product_no = {$product_no};";

@@ -19,15 +19,16 @@
 <?php
     $strUri2 = "";
     if ( isset($class) && (($class > 0) && ($class <= 2)) )
+    {
       $strUri2 .= "/class/{$class}";
+      $class_name =  ($class == 1) ? "매입" : "매출";
+      $class_form_name =  ($class == 1) ? "buy" : "sale";
+      $class_color = ($class != 1) ? "red"  : "blue";
+    }
     if (isset($date))
       $strUri2 .= "/date/{$date}";
     if (isset($page))
       $strUri2 .= "/page/{$page}";
-
-    $class_name =  ($class == 1) ? "매입" : "매출";
-    $class_form_name =  ($class == 1) ? "buy" : "sale";
-    $class_color = ($class != 1) ? "red"  : "blue";
 ?>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" />
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
