@@ -49,6 +49,84 @@ ORDER BY product_name
     }
 
 
+    function getMonthlyLedgers($year, $page = 1)
+    {
+        if (isset($page) && ($page > 0))
+            $start = ($page - 1) * PG_PER_PAGE;
+        else
+            $start = 0;
+        $per_page = PG_PER_PAGE;
+        $year_condition = ""; $current_year = (int)date("Y");
+		if ( !( isset($year) && ($year > 1950) && ($year <= $current_year) ) )
+			$year = $current_year;
+		$year_condition = "AND ledger_date BETWEEN '{$year}-01-01' AND '{$year}-12-31'";
+
+        $sql = "
+SELECT
+	P.product_name
+	, L.*
+FROM (
+		SELECT
+			product_no
+			, COUNT(sale_count) AS total_sale_number, SUM(sale_count) AS total_sale_count, SUM(sale_price) AS total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 1 , sale_count, NULL)) AS m1_sale_number, SUM(IF(MONTH(ledger_date) = 1,  sale_count, 0)) AS m1_total_sale_count, SUM(IF(MONTH(ledger_date) = 1,  sale_price, 0)) AS m1_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 2 , sale_count, NULL)) AS m2_sale_number, SUM(IF(MONTH(ledger_date) = 2,  sale_count, 0)) AS m2_total_sale_count, SUM(IF(MONTH(ledger_date) = 2,  sale_price, 0)) AS m2_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 3 , sale_count, NULL)) AS m3_sale_number, SUM(IF(MONTH(ledger_date) = 3,  sale_count, 0)) AS m3_total_sale_count, SUM(IF(MONTH(ledger_date) = 3,  sale_price, 0)) AS m3_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 4 , sale_count, NULL)) AS m4_sale_number, SUM(IF(MONTH(ledger_date) = 4,  sale_count, 0)) AS m4_total_sale_count, SUM(IF(MONTH(ledger_date) = 4,  sale_price, 0)) AS m4_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 5 , sale_count, NULL)) AS m5_sale_number, SUM(IF(MONTH(ledger_date) = 5,  sale_count, 0)) AS m5_total_sale_count, SUM(IF(MONTH(ledger_date) = 5,  sale_price, 0)) AS m5_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 6 , sale_count, NULL)) AS m6_sale_number, SUM(IF(MONTH(ledger_date) = 6,  sale_count, 0)) AS m6_total_sale_count, SUM(IF(MONTH(ledger_date) = 6,  sale_price, 0)) AS m6_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 7 , sale_count, NULL)) AS m7_sale_number, SUM(IF(MONTH(ledger_date) = 7,  sale_count, 0)) AS m7_total_sale_count, SUM(IF(MONTH(ledger_date) = 7,  sale_price, 0)) AS m7_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 8 , sale_count, NULL)) AS m8_sale_number, SUM(IF(MONTH(ledger_date) = 8,  sale_count, 0)) AS m8_total_sale_count, SUM(IF(MONTH(ledger_date) = 8,  sale_price, 0)) AS m8_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 9 , sale_count, NULL)) AS m9_sale_number, SUM(IF(MONTH(ledger_date) = 9,  sale_count, 0)) AS m9_total_sale_count, SUM(IF(MONTH(ledger_date) = 9,  sale_price, 0)) AS m9_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 10, sale_count, NULL)) AS m10_sale_number, SUM(IF(MONTH(ledger_date) = 10, sale_count, 0)) AS m10_total_sale_count, SUM(IF(MONTH(ledger_date) = 10, sale_price, 0)) AS m10_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 11, sale_count, NULL)) AS m11_sale_number, SUM(IF(MONTH(ledger_date) = 11, sale_count, 0)) AS m11_total_sale_count, SUM(IF(MONTH(ledger_date) = 11, sale_price, 0)) AS m11_total_sale_price
+			, COUNT(IF(MONTH(ledger_date) = 12, sale_count, NULL)) AS m12_sale_number, SUM(IF(MONTH(ledger_date) = 12, sale_count, 0)) AS m12_total_sale_count, SUM(IF(MONTH(ledger_date) = 12, sale_price, 0)) AS m12_total_sale_price
+		FROM `LEDGER` AS L
+		WHERE 1 = 1
+			{$year_condition}
+		GROUP BY product_no
+		HAVING total_sale_number IS NOT NULL
+	) AS L
+	INNER JOIN `PRODUCT` AS P ON P.product_no = L.product_no
+WHERE 1 = 1
+ORDER BY 3 DESC, 5 DESC, 4 DESC LIMIT {$start}, {$per_page};";
+
+        $result = $this->db->query($sql);
+        return $result;
+    }
+
+
+    function getMonthlyLedgersCount($year)
+    {
+        $year_condition = "";
+        if ( isset($year) && ($year > 1950) )
+			$year_condition = "AND ledger_date BETWEEN '{$year}-01-01' AND '{$year}-12-31'";
+		else
+			return null;
+
+        $sql = "
+SELECT
+	COUNT(product_no) AS ledger_count
+FROM (
+	SELECT
+		product_no, SUM(sale_count) AS total_sale_count
+	FROM `LEDGER` AS L
+	WHERE 1 = 1
+		{$year_condition}
+	GROUP BY product_no
+	HAVING total_sale_count IS NOT NULL
+	) L
+;";
+
+        $result = $this->db->query($sql);
+        $row = $result->unbuffered_row();
+        if (isset($row))
+            return $row->ledger_count;
+		else
+            return 0;
+    }
+
+
     function getLedger($ledger_no)
     {
 		$sql = "

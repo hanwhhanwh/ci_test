@@ -228,6 +228,35 @@ class Ledger extends CI_Controller
 	}
 
 
+	function month()
+	{
+		$data['page_title'] = "월별제품별 매출현황";
+
+        $arrUri = $this->uri->uri_to_assoc();
+        $base_url = "/ledger/month";
+        $uri_segment = 4;
+        $year = $this->_setParamFromUri($data, $arrUri, "year");
+        if ( isset($year) )
+        {
+			$base_url .= "/year/{$year}";
+            $uri_segment += 2;
+		}
+		$page = $this->_setParamFromUri($data, $arrUri, "page");
+    	$base_url .= "/page";
+        $config['base_url'] = $base_url;
+        $config['uri_segment'] = $uri_segment;
+
+		$data['ledgers'] = $this->ledger_model->getMonthlyLedgers($year, $page);
+		$config['total_rows'] = $this->ledger_model->getMonthlyLedgersCount($year);
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+
+		$this->load->view('main_header', $data);
+		$this->load->view('ledger_month', $data);
+		$this->load->view('main_footer', $data);
+	}
+
+
 	function search()
 	{
 		$data['page_title'] = "장부 기간조회 목록";
