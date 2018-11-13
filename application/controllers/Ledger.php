@@ -103,6 +103,26 @@ class Ledger extends CI_Controller
     }
 
 
+	function donut()
+	{
+		$data['page_title'] = "구분별 분포도";
+
+        $arrUri = $this->uri->uri_to_assoc();
+        $start_date = $this->_setParamFromUri($data, $arrUri, "start_date");
+        $end_date = $this->_setParamFromUri($data, $arrUri, "end_date");
+		if ( !isset($start_date) )
+			$start_date = date("Y-m-d", strtotime(" -15 day"));
+		if ( !isset($end_date) )
+			$end_date = date("Y-m-d");
+
+		$data['ledgers'] = $this->ledger_model->getDonutLedgers($start_date, $end_date);
+
+		$this->load->view('main_header', $data);
+		$this->load->view('ledger_donut', $data);
+		$this->load->view('main_footer', $data);
+	}
+
+
     function edit()
 	{
 		$this->load->library("form_validation");

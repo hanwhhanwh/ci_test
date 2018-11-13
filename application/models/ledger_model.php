@@ -49,6 +49,29 @@ ORDER BY product_name
     }
 
 
+    function getDonutLedgers($start_date, $end_date)
+    {
+        $date_condition = "";
+        if (isset($start_date) && (trim($start_date) != ""))
+            $date_condition = "AND ledger_date BETWEEN '{$start_date}' AND '{$end_date}'";
+
+        $sql = "
+SELECT
+    L.ledger_no, P.product_name, COUNT(sale_count) AS total_sale_number, SUM(sale_count) AS total_sale_count, SUM(sale_price) AS total_sale_price
+FROM `LEDGER` AS L
+	JOIN `PRODUCT` AS P ON P.product_no = L.product_no
+WHERE 1 = 1
+	AND L.`class` = 2
+    {$date_condition}
+GROUP BY L.product_no, P.product_name
+ORDER BY 3 DESC, 5 DESC, 4 DESC
+;";
+
+        $result = $this->db->query($sql);
+        return $result;
+    }
+
+
     function getMonthlyLedgers($year, $page = 1)
     {
         if (isset($page) && ($page > 0))
