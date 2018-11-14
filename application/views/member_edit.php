@@ -49,7 +49,7 @@
     </tr>
     <tr>
       <th scope="row" style="vertical-align:middle" class="mycolor2">등급</th>
-	    <td align="left"><label><input type="radio" name="rank" value="0" <?php if ($rank == 0) echo "checked"; ?>> 관리자</label> <label><input type="radio" name="rank" value="1" <?php if ($rank != 0) echo "checked"; ?>> 사용자</label></td>
+	    <td align="left"><label><input type="radio" name="rank" value="1" <?php if ($rank == 1) echo "checked"; ?>> 관리자</label> <label><input type="radio" name="rank" value="2" <?php if ($rank != 1) echo "checked"; ?>> 사용자</label></td>
     </tr>
   </tbody>
 </table>

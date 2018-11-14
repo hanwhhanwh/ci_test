@@ -67,3 +67,4 @@ application/config/doctypes.php
 application/config/foreign_chars.php
 application/config/hooks.php
 images/products/*
+application/ci_sessions/*

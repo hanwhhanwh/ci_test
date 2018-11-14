@@ -134,6 +134,12 @@ class Member extends CI_Controller
 
 	function list()
 	{
+		if ( $this->session->userdata("rank") != 1 )
+		{
+			redirect("/product/list");
+			return;
+		}
+
 		$data['page_title'] = "사용자 목록";
 
 		$arrUri = $this->uri->uri_to_assoc();
@@ -158,6 +164,36 @@ class Member extends CI_Controller
 		$this->load->view('main_header', $data);
 		$this->load->view('member_list', $data);
 		$this->load->view('main_footer', $data);
+	}
+
+
+	function login()
+	{
+		$data['page_title'] = "사용자 로그인";
+
+		$user_id = $this->input->post("user_id", true);
+		$password = $this->input->post("password", true);
+
+		$member = $this->member_model->login($user_id, $password);
+		if ($member)
+		{
+			$userdata = array("user_id" => $user_id, "user_name" => $member->user_name, "rank" => $member->rank);
+			$this->session->set_userdata($userdata);
+			redirect( '/product/list' );
+		}
+		else
+		{
+			redirect( '/member/list' );
+		}
+	}
+
+
+	function logout()
+	{
+		$userdata = array("user_id", "user_name", "rank");
+		$this->session->unset_userdata($userdata);
+
+		redirect( '/member/list' );
 	}
 
 

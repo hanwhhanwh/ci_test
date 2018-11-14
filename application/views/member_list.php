@@ -58,7 +58,7 @@
 	{
 		$num = $member->num;
 		$tel = $member->tel;
-		$rank = ($member->rank == 0) ? "관리자" : "직원";
+		$rank = ($member->rank == 1) ? "관리자" : "직원";
   
     $strUri = "/num/{$num}" . $strUri2;
   ?>

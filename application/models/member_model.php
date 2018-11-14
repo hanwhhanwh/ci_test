@@ -81,6 +81,26 @@ VALUES
     }
 
 
+	function login($user_id, $password)
+    {
+		$sql = "
+SELECT
+	num, user_name, user_id, passwd, tel, rank
+FROM MEMBER AS M
+WHERE 1 = 1
+	AND M.user_id = '{$user_id}'
+	AND M.passwd = password('{$password}');";
+		$result = $this->db->query($sql);
+		return $result->unbuffered_row();
+/*		
+		if ($result)
+			return $result->unbuffered_row();
+		else
+			return null;
+*/
+	}
+
+
 	function updateMember($num, $member)
     {
 		$sql = "UPDATE `MEMBER` SET 

@@ -29,7 +29,7 @@
     </tr>
     <tr>
       <th scope="row" style="vertical-align:middle" class="mycolor2">등급</th>
-	    <td align="left"><label><input type="radio" name="rank" value="0"> 관리자</label> <label><input type="radio" name="rank" value="1" checked> 직원</label></td>
+	    <td align="left"><label><input type="radio" name="rank" value="1"> 관리자</label> <label><input type="radio" name="rank" value="2" checked> 직원</label></td>
     </tr>
   </tbody>
 </table>
