@@ -178,6 +178,24 @@ VALUES
     }
 
 
+	function recalc_stock()
+	{
+		$sql = "
+UPDATE `PRODUCT` AS P
+	INNER JOIN (
+		SELECT
+			L.product_no, SUM(buy_count) AS total_buy_count, SUM(sale_count) AS total_sale_count
+		FROM `LEDGER` AS L
+		GROUP BY L.product_no
+	) AS L ON L.product_no = P.product_no
+SET 
+	stock_count = IFNULL(L.total_buy_count, 0) - IFNULL(L.total_sale_count, 0);
+";
+
+		$this->db->query($sql);
+	}
+
+
 	function updateProduct($product_no, $product)
     {
 		$sql = "UPDATE `PRODUCT` SET 

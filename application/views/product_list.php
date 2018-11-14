@@ -39,6 +39,7 @@
 	</div>
 	<div class="col-9" align="right">
 		<a href="/product/add<?=$strUri2?>" class="btn btn-sm btn-outline-secondary">추가</a>
+		<a href="/product/recalc_stock" class="btn btn-sm btn-outline-secondary">재고계산</a>
 	</div>
 </div>
 <table class="table table-sm table-bordered mymargin5">

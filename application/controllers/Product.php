@@ -267,6 +267,13 @@ class Product extends CI_Controller
 	}
 
 
+	function recalc_stock()
+	{
+		$this->product_model->recalc_stock();
+		redirect("/product/list");
+	}
+
+
 	function view()
 	{
 		$data['page_title'] = "상품 정보";
