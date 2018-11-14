@@ -111,9 +111,15 @@ class Ledger extends CI_Controller
         $start_date = $this->_setParamFromUri($data, $arrUri, "start_date");
         $end_date = $this->_setParamFromUri($data, $arrUri, "end_date");
 		if ( !isset($start_date) )
+		{
 			$start_date = date("Y-m-d", strtotime(" -15 day"));
+			$data['start_date'] = $start_date;
+		}
 		if ( !isset($end_date) )
+		{
 			$end_date = date("Y-m-d");
+			$data['end_date'] = $end_date;
+		}
 
 		$data['ledgers'] = $this->ledger_model->getDonutLedgers($start_date, $end_date);
 

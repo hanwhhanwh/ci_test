@@ -90,7 +90,7 @@
 <div class="row">
 	<div class="col-4" align="center">판매 횟수</div>
 	<div class="col-4" align="center">판매 수량</div>
-	<div class="col-4" align="center">판매 금액</div>
+	<div class="col-4" align="center">판매 금액 (천원)</div>
 </div>
 <div class="row">
 	<div class="col-4" align="center"><div id="PieChart_total_sale_number"></div></div>
@@ -125,27 +125,40 @@
 			columns: [<?=$columns_total_sale_number?>]
 			, type: "pie",
 		}
-		, bindto: "#PieChart_total_sale_number"
-		, labels: {
-			format: {
-				"애플망고": function(x) {
-					return d3.format('$')(x)
+		, pie: {
+			label: {
+				format: function(value, ratio, id) {
+					return (value + '번');
 				}
 			}
-    	}
+		}
+  		, bindto: "#PieChart_total_sale_number"
 	} );
 	var chart_total_sale_count = bb.generate( {
 		data: {
 			columns: [<?=$columns_total_sale_count?>]
 			, type: "pie",
 		}
+		, pie: {
+			label: {
+				format: function(value, ratio, id) {
+					return (value + '개');
+				}
+			}
+		}
 		, bindto: "#PieChart_total_sale_count"
-		, labels: true
 	} );
 	var chart_total_sale_price = bb.generate( {
 		data: {
 			columns: [<?=$columns_total_sale_price?>]
 			, type: "pie",
+		}
+		, pie: {
+			label: {
+				format: function(value, ratio, id) {
+					return (Math.floor(value / 1000));
+				}
+			}
 		}
 		, bindto: "#PieChart_total_sale_price"
 	} );
