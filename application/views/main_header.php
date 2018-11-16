@@ -61,7 +61,7 @@ if ( !$is_authorized )
 			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 				<a class="dropdown-item" href="/product/best">Best제품</a>
 				<a class="dropdown-item" href="/ledger/month">월별제품별현황</a>
-				<a class="dropdown-item" href="/ledger/chart">종류별분포도</a>
+				<a class="dropdown-item" href="/ledger/donut">종류별분포도</a>
 			</div>
 		</li>
 		<li class="nav-item dropdown">
