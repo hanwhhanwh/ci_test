@@ -15,6 +15,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  
 // --------------------------------------------------------------------------
 
+
+use PhpOffice\PhpSpreadsheet\Helper\Sample;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
+
 class Ledger extends CI_Controller
 {
 	function __construct()
@@ -145,6 +151,99 @@ class Ledger extends CI_Controller
 		$this->load->view('main_header', $data);
 		$this->load->view('ledger_edit', $data);
 		$this->load->view('main_footer', $data);
+	}
+
+
+	function excel()
+	{
+        $arrUri = $this->uri->uri_to_assoc();
+        $date = $this->_setParamFromUri($data, $arrUri, "date");
+        $class = $this->_setParamFromUri($data, $arrUri, "class");
+		$page_title = "장부 목록";
+        if ( isset($class) && (($class > 0) && ($class <= 2)) )
+		{
+			if ($class == 1)
+				$page_title = "장부 목록 - 매입";
+			else
+				$page_title = "장부 목록 - 매출";
+		}
+
+		$data['ledgers'] = $this->ledger_model->getLedgers($class, $date);
+
+		require 'vendor/autoload.php';
+		
+		$helper = new Sample();
+		if ($helper->isCli()) {
+			$helper->log('This example should only be run from a Web Browser' . PHP_EOL);
+		
+			return;
+		}
+		// Create new Spreadsheet object
+		$spreadsheet = new Spreadsheet();
+		
+		// Set document properties
+		$spreadsheet->getProperties()->setCreator('Maarten Balliauw')
+			->setLastModifiedBy('Maarten Balliauw')
+			->setTitle('Office 2007 XLSX Test Document')
+			->setSubject('Office 2007 XLSX Test Document')
+			->setDescription('Test document for Office 2007 XLSX, generated using PHP classes.')
+			->setKeywords('office 2007 openxml php')
+			->setCategory('Test result file');
+		
+		// Header row
+		$spreadsheet->setActiveSheetIndex(0)
+			->setCellValue('A1', $page_title)
+			->setCellValue('A2', '번호')
+			->setCellValue('B2', '구분')
+			->setCellValue('C2', '날짜')
+			->setCellValue('D2', '상품명')
+			->setCellValue('E2', '단가')
+			->setCellValue('F2', '매입수량')
+			->setCellValue('G2', '매입금액')
+			->setCellValue('H2', '매출수량')
+			->setCellValue('I2', '매출금액')
+			->setCellValue('J2', '비고');
+		
+		// 
+		$row_index = 3;
+		while ( $ledgers && ( $ledger = $ledgers->unbuffered_row() ) )
+		{
+
+			$spreadsheet->setActiveSheetIndex(0)
+				->setCellValue('A{$row_index}', '{$ledger->}')
+				->setCellValue('B{$row_index}', '{$ledger->}')
+				->setCellValue('C{$row_index}', '{$ledger->}')
+				->setCellValue('D{$row_index}', '{$ledger->}')
+				->setCellValue('E{$row_index}', '{$ledger->}')
+				->setCellValue('F{$row_index}', '{$ledger->}')
+				->setCellValue('G{$row_index}', '{$ledger->}')
+				->setCellValue('H{$row_index}', '{$ledger->}')
+				->setCellValue('I{$row_index}', '{$ledger->}')
+				->setCellValue('J{$row_index}', '{$ledger->}');
+			$row_index ++;
+		}
+		
+		// Rename worksheet
+		$spreadsheet->getActiveSheet()->setTitle('장부 목록');
+		
+		// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+		$spreadsheet->setActiveSheetIndex(0);
+		
+		// Redirect output to a client’s web browser (Xlsx)
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="ledger.xlsx"');
+		header('Cache-Control: max-age=0');
+		// If you're serving to IE 9, then the following may be needed
+		header('Cache-Control: max-age=1');
+		
+		// If you're serving to IE over SSL, then the following may be needed
+		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+		header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+		header('Pragma: public'); // HTTP/1.0
+		
+		$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+		$writer->save('php://output');
 	}
 
 
