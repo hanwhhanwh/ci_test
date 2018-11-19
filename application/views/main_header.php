@@ -1,6 +1,7 @@
 <?php
 
 include "main_header_only.php";
+include "main_carousel.php";
 
 $is_authorized = $this->session->has_userdata("user_id");
 if ( !$is_authorized )

@@ -19,6 +19,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Helper\Sample;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 
 class Ledger extends CI_Controller
@@ -168,7 +170,7 @@ class Ledger extends CI_Controller
 				$page_title = "장부 목록 - 매출";
 		}
 
-		$data['ledgers'] = $this->ledger_model->getLedgers($class, $date);
+		$ledgers = $this->ledger_model->getLedgers($class, $date);
 
 		require 'vendor/autoload.php';
 		
@@ -190,6 +192,13 @@ class Ledger extends CI_Controller
 			->setKeywords('office 2007 openxml php')
 			->setCategory('Test result file');
 		
+		$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(10);
+		$spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(11);
+		$spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(20);
+
+		$spreadsheet->getActiveSheet()->getStyle('A2:J2')->getFont()->setBold(true);
+		$spreadsheet->getActiveSheet()->getStyle('A2:J2')->getFill()->getStartColor()->setARGB(Color::COLOR_YELLOW);
+
 		// Header row
 		$spreadsheet->setActiveSheetIndex(0)
 			->setCellValue('A1', $page_title)
@@ -208,18 +217,22 @@ class Ledger extends CI_Controller
 		$row_index = 3;
 		while ( $ledgers && ( $ledger = $ledgers->unbuffered_row() ) )
 		{
+			if ( $ledger->class == 1 )
+				$class_name = "매입";
+			else
+				$class_name = "매출";
 
 			$spreadsheet->setActiveSheetIndex(0)
-				->setCellValue('A{$row_index}', '{$ledger->}')
-				->setCellValue('B{$row_index}', '{$ledger->}')
-				->setCellValue('C{$row_index}', '{$ledger->}')
-				->setCellValue('D{$row_index}', '{$ledger->}')
-				->setCellValue('E{$row_index}', '{$ledger->}')
-				->setCellValue('F{$row_index}', '{$ledger->}')
-				->setCellValue('G{$row_index}', '{$ledger->}')
-				->setCellValue('H{$row_index}', '{$ledger->}')
-				->setCellValue('I{$row_index}', '{$ledger->}')
-				->setCellValue('J{$row_index}', '{$ledger->}');
+				->setCellValue("A{$row_index}", "{$ledger->ledger_no}")
+				->setCellValue("B{$row_index}", "{$class_name}")
+				->setCellValue("C{$row_index}", "{$ledger->ledger_date}")
+				->setCellValue("D{$row_index}", "{$ledger->product_name}")
+				->setCellValue("E{$row_index}", "{$ledger->per_price}")
+				->setCellValue("F{$row_index}", "{$ledger->buy_count}")
+				->setCellValue("G{$row_index}", "{$ledger->buy_price}")
+				->setCellValue("H{$row_index}", "{$ledger->sale_count}")
+				->setCellValue("I{$row_index}", "{$ledger->sale_price}")
+				->setCellValue("J{$row_index}", "{$ledger->note}");
 			$row_index ++;
 		}
 		
